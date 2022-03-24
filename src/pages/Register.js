@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../assets/chaty-logos_white.png";
@@ -6,7 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { axiosInstance } from "../util/axios/axiosInstance";
 import { registerRoute } from "../util/axios/routes";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addUser, removeUser } from "../redux/userSlice";
 
 const Register = () => {
@@ -16,7 +16,6 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const user = useSelector((state) => state.user.value);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 

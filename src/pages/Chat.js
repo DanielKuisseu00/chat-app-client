@@ -6,7 +6,7 @@ import Logo from "../assets/chaty-logos_white.png";
 import { AiOutlineSend } from "react-icons/ai";
 import { useSelector, useDispatch } from "react-redux";
 import { removeUser } from "../redux/userSlice";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { axiosInstance } from "../util/axios/axiosInstance";
 import { getAllUsersRoute } from "../util/axios/routes";
 
@@ -25,7 +25,6 @@ const Chat = () => {
   useEffect(() => {
     socket.on("recieve_message", (data) => {
       setMessages((list) => [...list, data]);
-      console.log(messages);
     });
   }, [socket]);
 
@@ -38,14 +37,18 @@ const Chat = () => {
   // function to get all users
   useEffect(() => {
     const request = async () => {
-      const { data } = await axiosInstance.get(getAllUsersRoute);
-      console.log(user);
-      joinRoom(user.roomCode);
-      setUsers([...data]);
+      try {
+        const { data } = await axiosInstance.get(getAllUsersRoute);
+        console.log(user);
+        joinRoom(user.roomCode);
+        setUsers([...data]);
+      } catch (err) {
+        console.log(err);
+      }
     };
 
     request();
-  }, []);
+  });
 
   // funciton to send socket message to client
   const sendMessage = async () => {

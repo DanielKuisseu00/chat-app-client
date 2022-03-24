@@ -15,12 +15,12 @@ const SetAvatar = () => {
   const user = useSelector((state) => state.user.value);
 
   useEffect(() => {
-    if (user.user.isAvatarImageSet === true) {
+    if (user.isAvatarImageSet === true) {
       navigate("/chat");
-    } else if (!user.user) {
+    } else if (!user) {
       navigate("/");
     }
-  }, []);
+  });
 
   const toastOptions = {
     position: "top-center",
@@ -36,13 +36,17 @@ const SetAvatar = () => {
     formData.append("image", image);
     formData.append("id", user.user._id.toString());
 
-    const res = await axiosUpload.post(setAvatarRoute, formData, {
-      headers: {
-        "Content-Type": "multipart-form-data",
-      },
-    });
+    try {
+      const res = await axiosUpload.post(setAvatarRoute, formData, {
+        headers: {
+          "Content-Type": "multipart-form-data",
+        },
+      });
 
-    return res;
+      return res;
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handleSubmit = async (e) => {
