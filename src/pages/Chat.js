@@ -53,7 +53,7 @@ const Chat = () => {
       room,
       message,
       id: Math.floor(Math.random() * 100000),
-      sender: user.user.username,
+      sender: user.username,
       time: `${new Date(Date.now()).getHours()} : ${new Date(
         Date.now()
       ).getMinutes()}`,
@@ -90,7 +90,7 @@ const Chat = () => {
             <PowerButton
               onClick={() => {
                 dispatch(removeUser());
-                navigate("/login");
+                navigate("/");
               }}
             >
               <PowerText>Logout</PowerText>
@@ -105,9 +105,7 @@ const Chat = () => {
                 return (
                   <MessageBubble
                     key={message.id}
-                    sender={
-                      user.user.username === message.sender ? true : false
-                    }
+                    sender={user.username === message.sender ? true : false}
                   >
                     {message.message}
                   </MessageBubble>

@@ -51,7 +51,7 @@ const Login = () => {
         dispatch(removeUser());
         dispatch(addUser(data));
 
-        navigate("/");
+        navigate("/chat");
       } catch (err) {
         toast.error("Opps? somthing went wrong", toastOptions);
       }

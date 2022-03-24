@@ -16,9 +16,9 @@ const SetAvatar = () => {
 
   useEffect(() => {
     if (user.user.isAvatarImageSet === true) {
-      navigate("/");
+      navigate("/chat");
     } else if (!user.user) {
-      navigate("/login");
+      navigate("/");
     }
   }, []);
 
@@ -51,7 +51,7 @@ const SetAvatar = () => {
       const { data } = await postImage({ image: file });
       dispatch(removeUser());
       dispatch(addUser(data));
-      navigate("/");
+      navigate("/chat");
     } catch (err) {
       console.log(err);
       toast.error("Opps? somthing went wrong", toastOptions);

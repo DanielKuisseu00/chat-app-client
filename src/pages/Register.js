@@ -122,10 +122,7 @@ const Register = () => {
 
             <Span>
               I already have an account{" "}
-              <Link
-                style={{ color: "blue", textDecoration: "none" }}
-                to="/login"
-              >
+              <Link style={{ color: "blue", textDecoration: "none" }} to="/">
                 Login
               </Link>
             </Span>

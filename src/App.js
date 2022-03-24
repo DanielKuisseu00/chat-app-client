@@ -11,8 +11,8 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Chat />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/chat" element={<Chat />} />
+        <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/setAvatar" element={<SetAvatar />} />
         <Route path="*" element={<ErrorPage />} />
