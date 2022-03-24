@@ -1,9 +1,62 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { users } from "../data/users";
+import io from "socket.io-client";
 import Logo from "../assets/chaty-logos_white.png";
+import { AiOutlineSend } from "react-icons/ai";
+import { useSelector, useDispatch } from "react-redux";
+import { removeUser } from "../redux/userSlice";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { axiosInstance } from "../util/axios/axiosInstance";
+import { getAllUsersRoute } from "../util/axios/routes";
+
+const socket = io.connect("http://localhost:5002");
 
 const Chat = () => {
+  const [room, setRoom] = useState("");
+  const [message, setMessage] = useState("");
+  const [users, setUsers] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.user.value);
+
+  useEffect(() => {
+    socket.on("recieve_message", (data) => {
+      setMessages((list) => [...list, data]);
+      console.log(messages);
+    });
+  }, [socket]);
+
+  const joinRoom = (roomCode) => {
+    setRoom(roomCode);
+    socket.emit("join_room", roomCode);
+  };
+
+  useEffect(() => {
+    const request = async () => {
+      const { data } = await axiosInstance.get(getAllUsersRoute);
+      joinRoom(user.user.roomCode);
+      setUsers([...data]);
+    };
+
+    request();
+  }, []);
+
+  const sendMessage = async () => {
+    const currentMessage = {
+      room,
+      message,
+      sender: user.user.username,
+      time: `${new Date(Date.now()).getHours()} : ${new Date(
+        Date.now()
+      ).getMinutes()}`,
+    };
+
+    await socket.emit("send_message", currentMessage);
+    await setMessages((list) => [...list, currentMessage]);
+    console.log(messages);
+  };
+
   return (
     <Container>
       <ChatContainer>
@@ -14,16 +67,54 @@ const Chat = () => {
           </Top>
           <Bottom>
             {users.map((user) => {
+              const userRoomCode = user.roomCode;
               return (
-                <Contact>
-                  <ProfileImage src={user.profileImage} />
+                <Contact key={user._id} onClick={() => joinRoom(userRoomCode)}>
+                  <ProfileImage src={user.avatar} />
                   <Username>{user.username}</Username>
                 </Contact>
               );
             })}
           </Bottom>
         </ContactsContainer>
-        <MessageContainer></MessageContainer>
+        <MessageContainer>
+          <MessageTop>
+            <PowerButton
+              onClick={() => {
+                dispatch(removeUser());
+                navigate("/login");
+              }}
+            >
+              <PowerText>Logout</PowerText>
+            </PowerButton>
+
+            <MessageTopText>Online: </MessageTopText>
+            <OnlineBubble />
+          </MessageTop>
+          <MessageMiddle>
+            {messages.map((message) => {
+              // console.log(message.sender, savedUser.username);
+              let oMessage =
+                user.user.username === message.sender ? true : false;
+              console.log(oMessage)
+              return (
+                <MessageBubble key={message.message} sender={oMessage}>
+                  {message.message}
+                </MessageBubble>
+              );
+            })}
+          </MessageMiddle>
+          <MessageBottom>
+            <Input
+              name="message"
+              placeholder="blah blah"
+              onChange={(e) => setMessage(e.target.value)}
+            />
+            <SendButton onClick={sendMessage}>
+              <AiOutlineSend style={{ color: "black" }} />
+            </SendButton>
+          </MessageBottom>
+        </MessageContainer>
       </ChatContainer>
     </Container>
   );
@@ -107,6 +198,89 @@ const Username = styled.h3`
 const MessageContainer = styled.div`
   flex: 3;
   background: black;
+  display: flex;
+  flex-direction: column;
+`;
+
+const MessageTop = styled.div`
+  flex: 1;
+  background: #080421;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 10px;
+`;
+
+const PowerButton = styled.div`
+  background: black;
+  padding: 10px;
+  color: white;
+  margin: 5px;
+  border-radius: 10px;
+  cursor: pointer;
+`;
+
+const PowerText = styled.p``;
+
+const MessageTopText = styled.p`
+  color: white;
+  margin-right: 10px;
+`;
+
+const OnlineBubble = styled.div`
+  width: 10px;
+  height: 10px;
+  border-radius: 100%;
+  background: #22ff00;
+`;
+
+const MessageMiddle = styled.div`
+  flex: 16;
+  display: flex;
+  flex-direction: column;
+  align-items: ${(props) => {
+    if (props.sender) {
+      return "flex-end";
+    } else {
+      return "flex-start";
+    }
+  }};
+`;
+
+const MessageBubble = styled.div`
+  padding: 10px;
+  width: 100px;
+  margin-bottom: 10px;
+  height: 30px;
+  background: teal;
+  border-radius: 10px;
+`;
+
+const MessageBottom = styled.div`
+  flex: 2;
+  background: #080421;
+  display: flex;
+`;
+
+const Input = styled.input`
+  width: 95%;
+  font-weight: bold;
+  font-size: 15px;
+  padding: 0 10px;
+  &: focus {
+    outline: none;
+  }
+`;
+
+const SendButton = styled.div`
+  width: 5%;
+  background: #03fcc2;
+  color: black;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 `;
 
 export default Chat;

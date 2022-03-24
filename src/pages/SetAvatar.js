@@ -15,9 +15,9 @@ const SetAvatar = () => {
   const user = useSelector((state) => state.user.value);
 
   useEffect(() => {
-    if ((user.isAvatarSet = true)) {
+    if (user.user.isAvatarImageSet === true) {
       navigate("/");
-    } else if (!user) {
+    } else if (!user.user) {
       navigate("/login");
     }
   }, []);
@@ -34,7 +34,7 @@ const SetAvatar = () => {
   const postImage = async ({ image }) => {
     const formData = new FormData();
     formData.append("image", image);
-    formData.append("id", user._id.toString());
+    formData.append("id", user.user._id.toString());
 
     const res = await axiosUpload.post(setAvatarRoute, formData, {
       headers: {
@@ -49,7 +49,6 @@ const SetAvatar = () => {
     e.preventDefault();
     try {
       const { data } = await postImage({ image: file });
-      console.log(data);
       dispatch(removeUser());
       dispatch(addUser(data));
       navigate("/");

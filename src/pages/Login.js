@@ -32,11 +32,11 @@ const Login = () => {
 
   // If user is already logged in and saved into local stoarge code will send them to chat room.
 
-  useEffect(() => {
-    if (user.username) {
-      navigate("/");
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (user.username) {
+  //     navigate("/");
+  //   }
+  // }, []);
 
   // Makes request to api and saves recived user object to redux
 
@@ -50,6 +50,7 @@ const Login = () => {
         });
         dispatch(removeUser());
         dispatch(addUser(data));
+
         navigate("/");
       } catch (err) {
         toast.error("Opps? somthing went wrong", toastOptions);
