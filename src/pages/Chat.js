@@ -21,6 +21,7 @@ const Chat = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.user.value);
 
+  // Wait for message to recieve
   useEffect(() => {
     socket.on("recieve_message", (data) => {
       setMessages((list) => [...list, data]);
@@ -28,21 +29,25 @@ const Chat = () => {
     });
   }, [socket]);
 
+  // function to join room
   const joinRoom = (roomCode) => {
     setRoom(roomCode);
     socket.emit("join_room", roomCode);
   };
 
+  // function to get all users
   useEffect(() => {
     const request = async () => {
       const { data } = await axiosInstance.get(getAllUsersRoute);
-      joinRoom(user.user.roomCode);
+      console.log(user);
+      joinRoom(user.roomCode);
       setUsers([...data]);
     };
 
     request();
   }, []);
 
+  // funciton to send socket message to client
   const sendMessage = async () => {
     const currentMessage = {
       room,
