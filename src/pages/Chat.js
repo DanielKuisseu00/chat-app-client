@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import ScrollToBottom from "react-scroll-to-bottom";
 import styled from "styled-components";
 import io from "socket.io-client";
 import Logo from "../assets/chaty-logos_white.png";
@@ -46,6 +47,7 @@ const Chat = () => {
     const currentMessage = {
       room,
       message,
+      id: Math.floor(Math.random() * 100000),
       sender: user.user.username,
       time: `${new Date(Date.now()).getHours()} : ${new Date(
         Date.now()
@@ -54,6 +56,7 @@ const Chat = () => {
 
     await socket.emit("send_message", currentMessage);
     await setMessages((list) => [...list, currentMessage]);
+    setMessage("");
     console.log(messages);
   };
 
@@ -92,23 +95,29 @@ const Chat = () => {
             <OnlineBubble />
           </MessageTop>
           <MessageMiddle>
-            {messages.map((message) => {
-              // console.log(message.sender, savedUser.username);
-              let oMessage =
-                user.user.username === message.sender ? true : false;
-              console.log(oMessage)
-              return (
-                <MessageBubble key={message.message} sender={oMessage}>
-                  {message.message}
-                </MessageBubble>
-              );
-            })}
+            <ScrollToBottom style={{ height: "100%", display: "flex" }}>
+              {messages.map((message) => {
+                return (
+                  <MessageBubble
+                    key={message.id}
+                    sender={
+                      user.user.username === message.sender ? true : false
+                    }
+                  >
+                    {message.message}
+                  </MessageBubble>
+                );
+              })}
+            </ScrollToBottom>
           </MessageMiddle>
           <MessageBottom>
             <Input
               name="message"
               placeholder="blah blah"
+              value={message}
               onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={(e) => (e = e.key === "Enter" && sendMessage())}
+              autoComplete="off"
             />
             <SendButton onClick={sendMessage}>
               <AiOutlineSend style={{ color: "black" }} />
@@ -203,7 +212,7 @@ const MessageContainer = styled.div`
 `;
 
 const MessageTop = styled.div`
-  flex: 1;
+  height: 10%;
   background: #080421;
   display: flex;
   align-items: center;
@@ -235,16 +244,8 @@ const OnlineBubble = styled.div`
 `;
 
 const MessageMiddle = styled.div`
-  flex: 16;
+  height: 80%;
   display: flex;
-  flex-direction: column;
-  align-items: ${(props) => {
-    if (props.sender) {
-      return "flex-end";
-    } else {
-      return "flex-start";
-    }
-  }};
 `;
 
 const MessageBubble = styled.div`
@@ -254,10 +255,11 @@ const MessageBubble = styled.div`
   height: 30px;
   background: teal;
   border-radius: 10px;
+  align-self: ${(props) => (props.sender ? "flex-end" : "flex-start")};
 `;
 
 const MessageBottom = styled.div`
-  flex: 2;
+  height: 10%;
   background: #080421;
   display: flex;
 `;
