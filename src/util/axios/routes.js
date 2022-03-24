@@ -1,4 +1,4 @@
-export const host = "http://localhost:5003";
+export const host = "https://chatty-api-0011.herokuapp.com";
 
 export const registerRoute = `/api/auth/register`;
 export const setAvatarRoute = `/api/auth/addAvatar`;

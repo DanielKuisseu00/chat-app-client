@@ -10,7 +10,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { axiosInstance } from "../util/axios/axiosInstance";
 import { getAllUsersRoute } from "../util/axios/routes";
 
-const socket = io.connect("http://localhost:5002");
+const socket = io.connect("https://chatty-socket-api.herokuapp.com/");
 
 const Chat = () => {
   const [room, setRoom] = useState("");
